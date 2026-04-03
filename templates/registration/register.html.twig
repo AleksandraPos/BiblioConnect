@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Inscription{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+    <h1>Inscription</h1>
 
     {{ form_errors(registrationForm) }}
 
@@ -20,14 +20,15 @@
         {% endif %}
 
         {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
+            label: 'Mot de passe',
+            attr: { autocomplete: 'nouveau-mot-de-passe' }
         }) }}
 
         {% if registrationForm.agreeTerms is defined %}
             {{ form_row(registrationForm.agreeTerms) }}
         {% endif %}
 
-        <button type="submit" class="btn">Register</button>
+        <button type="submit" class="btn">S'inscrire</button>
         
         {{ form_rest(registrationForm) }}
     {{ form_end(registrationForm) }}
