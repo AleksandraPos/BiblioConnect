@@ -40,18 +40,17 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
-    {
-        $roles = $token->getRoleNames();
-        if (in_array('ROLE_ADMIN', $roles, true)) {
-            return new RedirectResponse($this->urlGenerator->generate('app_admin_dashboard'));
-        }
+{
+    /** @var User $user */
+    $user = $token->getUser();
+    $roles = $user->getRoles();
 
-        if (in_array('ROLE_LIBRARIAN', $roles, true)) {
-            return new RedirectResponse($this->urlGenerator->generate('app_librarian_catalogue'));
-        }
-
-        return new RedirectResponse($this->urlGenerator->generate('app_user_profile'));
+    if (in_array('ROLE_ADMIN', $roles) || in_array('ROLE_LIBRARIAN', $roles)) {
+        return new RedirectResponse($this->urlGenerator->generate('admin'));
     }
+
+    return new RedirectResponse($this->urlGenerator->generate('app_home'));
+}
 
     protected function getLoginUrl(Request $request): string
     {
