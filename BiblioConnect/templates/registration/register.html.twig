@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+    <h1>Inscription</h1>
+
+    {{ form_errors(registrationForm) }}
+
+    {{ form_start(registrationForm) }}
+    
+        {{ form_row(registrationForm.email) }}
+        
+        {% if registrationForm.firstName is defined %}
+            {{ form_row(registrationForm.firstName, { label: 'Prénom' }) }}
+        {% endif %}
+        
+        {% if registrationForm.lastName is defined %}
+            {{ form_row(registrationForm.lastName, { label: 'Nom' }) }}
+        {% endif %}
+
+        {{ form_row(registrationForm.plainPassword, {
+            label: 'Mot de passe',
+            attr: { autocomplete: 'nouveau-mot-de-passe' }
+        }) }}
+
+        {% if registrationForm.agreeTerms is defined %}
+            {{ form_row(registrationForm.agreeTerms) }}
+        {% endif %}
+
+        <button type="submit" class="btn">S'inscrire</button>
+        
+        {{ form_rest(registrationForm) }}
+    {{ form_end(registrationForm) }}
+{% endblock %}

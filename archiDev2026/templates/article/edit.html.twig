@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edite article{% endblock %}
+
+{% block body %}
+    {{ form_start(form)}}
+
+        <div> {{ form_label(form.title) }}  </div>
+        <div> {{ form_widget(form.title) }}  </div>
+
+        <div> {{ form_label(form.description) }}  </div>
+        <div> {{ form_widget(form.description) }}  </div>
+
+        <div> {{ form_label(form.created) }}  </div>
+        <div> {{ form_widget(form.created) }}  </div>
+
+        <button class="btn">{{ button_label|default('Enregistrer') }}</button>
+
+    {{ form_end(form)}}
+
+    <p><a href="{{ path('app_article') }}">Annuler</a></p>
+
+{% endblock %}

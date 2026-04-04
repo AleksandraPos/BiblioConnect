@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{{ path('app_main') }}" class="btn btn-outline-secondary">← Retour au catalogue</a>
+
+        {% if is_granted('ROLE_LIBRARIAN') %}
+            <div>
+                <a href="{{ path('app_book_edit', {'id': book.id}) }}" class="btn btn-warning btn-sm shadow-sm"><i class="bi bi-pencil"></i> Modifier</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row shadow-sm p-4 bg-white rounded border">
+        <div class="col-md-4 text-center">
+            
+            <div class="bg-light d-flex align-items-center justify-content-center rounded border" style="height: 350px;">
+                {% if book.image %}
+                    <img src="{{ book.image }}" alt="{{ book.title }}" class="img-fluid">
+                {% else %}
+                    <div>
+                        <i class="bi bi-book" style="font-size: 3rem; color: #ccc;"></i>
+                        <p class="text-muted">Image non disponible</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold text-primary">{{ book.title }}</h1>
+            <p class="lead">Par <strong>{{ book.author }}</strong></p>
+            <hr>
+
+            <div class="row mb-4">
+                <div class="col-sm-6">
+                    <p class="mb-1 text-muted">ISBN</p>
+                    <p class="fw-bold">{{ book.isbn }}</p>
+                </div>
+                <div class="col-sm-6">
+                    <p class="mb-1 text-muted">Langue</p>
+                    <p class="fw-bold">{{ book.language|upper }}</p>
+                </div>
+            </div>
+
+            <h5>Description</h5>
+            <p class="text-secondary">
+                {{ book.description|default('Aucune description disponible pour cet ouvrage.') }}
+            </p>
+
+            <div class="alert {{ book.stock > 0 ? 'alert-success' : 'alert-danger' }} d-inline-block mt-3">
+                <strong>Stock :</strong> {{ book.stock }} exemplaire(s) disponible(s)
+            </div>
+
+            <<div class="mt-4">
+            
+            {% if book.stock > 0 %}
+            {% if app.user %}
+            <a href="{{ path('app_book_borrow', {'id': book.id}) }}" class="btn btn-primary btn-lg px-5">Emprunter ce livre</a>
+            {% else %}
+            <a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-lg px-5">Connectez-vous pour emprunter</a>
+            {% endif %}
+    {% else %}
+        <button class="btn btn-secondary btn-lg px-5" disabled>Rupture de stock</button>
+    {% endif %}
+</div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h3 class="mb-4">Avis des lecteurs ⭐</h3>
+        {% if app.user %}
+        <div class="card p-4 mb-5 shadow-sm">
+            <h5>Laisser un avis</h5>
+            {{ form_start(reviewForm) }}
+                {{ form_row(reviewForm.rating) }}
+                {{ form_row(reviewForm.comment) }}
+                <button class="btn btn-primary mt-2">Envoyer mon avis</button>
+            {{ form_end(reviewForm) }}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <a href="{{ path('app_login') }}">Connectez-vous</a> pour laisser un avis.
+        </div>
+    {% endif %}
+
+    <div class="reviews-list">
+        {% for review in book.reviews %}
+            <div class="border-bottom mb-3 pb-3">
+                <div class="d-flex justify-content-between">
+                    <strong>{{ review.userAccount.userIdentifier }}</strong>
+                    <span class="text-warning">
+                        {% for i in 1..5 %}
+                            <i class="bi bi-star{{ i <= review.rating ? '-fill' : '' }}"></i>
+                        {% endfor %}
+                    </span>
+                </div>
+                <p class="text-muted small mb-1">{{ review.createdAt|date('d/m/Y') }}</p>
+                <p class="mb-0">{{ review.comment }}</p>
+            </div>
+        {% else %}
+            <p class="text-muted italic">Aucun commentaire pour le moment.</p>
+        {% endfor %}
+    </div>
+</div>
+    </div>
+</div>
+{% endblock %}
