@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Registration{% endblock %}
+
+{% block body %}
+    <h1>Crée un nouveau utilisateur</h1>
+
+    {{ form_start(form) }}
+        <div class="mb-3">
+        {{ form_label(form.firstname, 'Votre prénom', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.firstname, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.firstname) }}
+        </div>
+        <div class="mb-3">
+        {{ form_label(form.lastname, 'Votre nom', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.lastname, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.lastname) }}
+        </div>
+        <div class="mb-3">
+        {{ form_label(form.email, 'Votre email', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.email) }}
+        </div>
+        <div class="mb-3">
+        {{ form_label(form.password, 'Votre mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.password, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.password) }}
+        </div>
+
+        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    {{ form_end(form) }}
+
+{% endblock %}
