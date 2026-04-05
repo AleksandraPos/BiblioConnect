@@ -4,6 +4,9 @@ namespace App\Controller\Admin;
 
 use App\Entity\Book;
 use App\Entity\Reservation;
+use App\Entity\User;
+use App\Entity\Category;
+use App\Controller\Admin\BookCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -16,9 +19,7 @@ class DashboardController extends AbstractDashboardController
 {
     public function index(): Response
     {
-    
         $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
-        
         return $this->redirect($adminUrlGenerator->setController(BookCrudController::class)->generateUrl());
     }
 
@@ -31,11 +32,17 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
 {
     yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-    yield MenuItem::linkToCrud('Livres', 'fas fa-book', Book::class);
-    yield MenuItem::linkToCrud('Catégories', 'fas fa-list', Category::class);
-    
-    yield MenuItem::linkToCrud('Réservations', 'fas fa-calendar-check', Reservation::class);
-    
-    yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-users', User::class);
+
+    yield MenuItem::linkToRoute('Livres', 'fas fa-book', 'admin', [
+        'crudAction' => 'index',
+        'crudControllerFqcn' => BookCrudController::class,
+    ]);
+
+    yield MenuItem::linkToRoute('Réservations', 'fas fa-calendar-check', 'admin', [
+        'crudAction' => 'index',
+        'crudControllerFqcn' => ReservationCrudController::class,
+    ]);
+
+    yield MenuItem::linkToUrl('Retour au site', 'fas fa-eye', '/');
 }
 }

@@ -41,15 +41,19 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
 {
-    /** @var User $user */
-    $user = $token->getUser();
-    $roles = $user->getRoles();
+    //** @var User $user */
+    // $user = $token->getUser();
+    $roles = $token->getRolenames();
 
-    if (in_array('ROLE_ADMIN', $roles) || in_array('ROLE_LIBRARIAN', $roles)) {
+    if (in_array('ROLE_ADMIN', $roles)) {
         return new RedirectResponse($this->urlGenerator->generate('admin'));
     }
 
-    return new RedirectResponse($this->urlGenerator->generate('app_home'));
+    if (in_array('ROLE_LIBRARIAN', $roles)) {
+        return new RedirectResponse($this->urlGenerator->generate('admin'));
+    }
+
+    return new RedirectResponse($this->urlGenerator->generate('app_profile'));
 }
 
     protected function getLoginUrl(Request $request): string

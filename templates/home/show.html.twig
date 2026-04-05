@@ -4,6 +4,16 @@
 
 {% block body %}
 <div class="container mt-5">
+
+{% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    
     <a href="{{ path('app_home') }}" class="btn btn-light mb-4">← Retour au catalogue</a>
 
     <div class="row">
