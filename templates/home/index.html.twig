@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}BiblioConnect - Accueil{% endblock %}
 
 {% block body %}
 <div class="container mt-5">
@@ -18,19 +18,43 @@
                     {% if book.image %}
                         <img src="{{ book.image }}" class="card-img-top" alt="{{ book.title }}" style="height: 250px; object-fit: cover;">
                     {% endif %}
+                    
                     <div class="card-body">
                         <h5 class="card-title">{{ book.title }}</h5>
                         <p class="card-text text-muted">Par {{ book.author }}</p>
                         <p class="card-text">{{ book.description|slice(0, 100) }}...</p>
                         <span class="badge bg-info">{{ book.category }}</span>
                     </div>
-                    <div class="card-footer bg-transparent border-top-0">
+
+                    <div class="card-footer bg-transparent border-top-0 d-flex gap-2">
+                    
                         <a href="{{ path('app_book_show', {'id': book.id}) }}" class="btn btn-outline-secondary w-100">Détails</a>
+
+                        {% if app.user %}
+                            {% set isFavorite = false %}
+                            {% for fav in app.user.favorites %}
+                                {% if fav.id == book.id %}
+                                    {% set isFavorite = true %}
+                                {% endif %}
+                            {% endfor %}
+
+                            <a href="{{ path('app_book_favorite', {'id': book.id}) }}" 
+                               class="btn {{ isFavorite ? 'btn-danger' : 'btn-outline-danger' }}">
+                                <i class="{{ isFavorite ? 'fas' : 'far' }} fa-heart"></i>
+                            </a>
+                        {% else %}
+    
+                            <a href="{{ path('app_login') }}" class="btn btn-outline-danger">
+                                <i class="far fa-heart"></i>
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         {% else %}
-            <p>Aucun livre trouvé.</p>
+            <div class="col-12">
+                <p>Aucun livre trouvé.</p>
+            </div>
         {% endfor %}
     </div>
 </div>

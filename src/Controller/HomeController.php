@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Book;
 use App\Entity\Reservation;
 use App\Repository\BookRepository;
+use App\Entity\Comment;
+use App\Form\CommentType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,10 +33,33 @@ final class HomeController extends AbstractController
     }
 
     #[Route('/book/{id}', name: 'app_book_show')]
-    public function show(Book $book): Response
+    public function show(Book $book, Request $request, EntityManagerInterface $em): Response
     {
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->getUser();
+            
+            if (!$user) {
+                $this->addFlash('danger', 'Vous devez être connecté pour laisser un avis.');
+                return $this->redirectToRoute('app_login');
+            }
+
+            $comment->setBook($book);
+            $comment->setAuthor($user);
+
+            $em->persist($comment);
+            $em->flush();
+
+            $this->addFlash('success', 'Merci pour votre avis !');
+            return $this->redirectToRoute('app_book_show', ['id' => $book->getId()]);
+        }
+
         return $this->render('home/show.html.twig', [
             'book' => $book,
+            'commentForm' => $form->createView(),
         ]);
     }
 

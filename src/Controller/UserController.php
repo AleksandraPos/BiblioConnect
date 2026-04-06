@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Book;
+use App\Entity\Favorite;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,22 +27,26 @@ final class UserController extends AbstractController
     }
 
     #[Route('/book/{id}/favorite', name: 'app_book_favorite')]
-    #[IsGranted('ROLE_USER')]
-    public function toggleFavorite(Book $book, EntityManagerInterface $entityManager, Request $request): Response
-   {
-    /** @var User $user */
+public function toggleFavorite(Book $book, EntityManagerInterface $entityManager, Request $request): Response
+{
     $user = $this->getUser();
+    if (!$user) return $this->redirectToRoute('app_login');
 
-    if ($user->getFavorites()->contains($book)) {
-        $user->removeFavorite($book);
-        $this->addFlash('info', 'Le livre a été retiré de vos favoris.');
+    $favoriteRepo = $entityManager->getRepository(Favorite::class);
+    $favorite = $favoriteRepo->findOneBy(['owner' => $user, 'book' => $book]);
+
+    if ($favorite) {
+        $entityManager->remove($favorite);
+        $this->addFlash('info', 'Retiré des favoris.');
     } else {
-        $user->addFavorite($book);
-        $this->addFlash('success', 'Le livre a été ajouté à vos favoris.');
+        $favorite = new Favorite();
+        $favorite->setOwner($user); 
+        $favorite->setBook($book); 
+        $entityManager->persist($favorite);
+        $this->addFlash('success', 'Ajouté aux favoris.');
     }
 
     $entityManager->flush();
-
     return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('app_home'));
 }
 
